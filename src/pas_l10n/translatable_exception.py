@@ -18,11 +18,11 @@ https://www.direct-netware.de/redirect?licenses;mpl2
 """
 
 from dpt_runtime.binary import Binary
-from dpt_runtime.traced_exception import TracedException
+from dpt_runtime.traced_exception import _TracedException
 
 from .l10n import L10n
 
-class TranslatableException(TracedException):
+class TranslatableException(_TracedException):
     """
 "TranslatableException" gets a l10n message ID to translate the exception
 message to the selected language.
@@ -54,7 +54,7 @@ Translated message
 
         if (value is None): value = self.l10n_message
 
-        TracedException.__init__(self, value, _exception)
+        _TracedException.__init__(self, value, _exception)
     #
 
     def __format__(self, format_spec):
@@ -68,6 +68,6 @@ format_spec.
         """
 
         if (format_spec == "l10n_message"): return Binary.str(self.l10n_message)
-        else: TracedException.__format__(self, format_spec)
+        else: _TracedException.__format__(self, format_spec)
     #
 #

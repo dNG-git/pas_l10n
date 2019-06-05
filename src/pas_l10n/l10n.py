@@ -82,59 +82,6 @@ Returns a formatted number.
     #
 
     @staticmethod
-    def init(file_id, lang = None):
-        """
-Load the given language section.
-
-:param file_id: L10n file ID
-
-:since: v1.0.0
-        """
-
-        path_lang = Settings.get("path_lang")
-
-        if (path_lang is None):
-            path_lang = (Binary.str(os.environ['PAS_PATH_LANG'])
-                         if ("PAS_PATH_LANG" in os.environ) else
-                         path.join(Settings.get("path_base"), "lang")
-                        )
-
-            Settings.set("path_lang", path_lang)
-        #
-
-        instance = L10n.get_instance(lang)
-        relative_file_path_name = L10n.get_relative_file_path_name(file_id)
-
-        file_path_name = "{0}/{1}/{2}.json".format(path_lang, instance.lang, relative_file_path_name)
-
-        try: instance.read_file(file_path_name, True)
-        except ( IOException, ValueException ):
-            fallback_lang = (Settings.get("pas_lang") if (L10n.default_lang is None) else L10n.default_lang)
-
-            file_path_name = "{0}/{1}/{2}.json".format(path_lang, fallback_lang, relative_file_path_name)
-            instance.read_file(file_path_name)
-        #
-    #
-
-    @staticmethod
-    def is_defined(key, lang = None):
-        """
-Checks if a given key is a defined language string.
-
-:param key: L10n key
-:param lang: Language code
-
-:return: (bool) True if defined
-:since:  v1.0.0
-        """
-
-        try: _dict = L10n.get_dict(lang)
-        except ValueException: _dict = { }
-
-        return (key in _dict)
-    #
-
-    @staticmethod
     def get(key = None, default = None, lang = None):
         """
 Returns the value with the specified key or the default one if undefined.
@@ -151,6 +98,29 @@ Returns the value with the specified key or the default one if undefined.
     #
 
     @staticmethod
+    def get_base_path():
+        """
+Returns the base path to localization specific directories and files.
+
+:return: (str) Localization base path
+:since:  v1.0.0
+        """
+
+        _return = Settings.get("path_lang")
+
+        if (_return is None):
+            _return = (Binary.str(os.environ['PAS_PATH_LANG'])
+                       if ("PAS_PATH_LANG" in os.environ) else
+                       path.join(Settings.get("path_base"), "lang")
+                      )
+
+            Settings.set("path_lang", _return)
+        #
+
+        return _return
+    #
+
+    @staticmethod
     def get_default_lang():
         """
 Returns the defined default language of the current task.
@@ -163,7 +133,7 @@ Returns the defined default language of the current task.
 
         if (hasattr(L10n._local, "lang")): _return = L10n._local.lang
         if (_return is None): _return = L10n.default_lang
-        if (_return is None): _return = Settings.get("pas_lang")
+        if (_return is None): _return = Settings.get("core_lang")
 
         return _return
     #
@@ -233,6 +203,50 @@ Returns the relative file path and name for the file ID given.
         #
 
         return _return
+    #
+
+    @staticmethod
+    def init(file_id, lang = None):
+        """
+Load the given language section.
+
+:param file_id: L10n file ID
+
+:since: v1.0.0
+        """
+
+        base_path = L10n.get_base_path()
+
+        instance = L10n.get_instance(lang)
+        relative_file_path_name = L10n.get_relative_file_path_name(file_id)
+
+        file_path_name = "{0}/{1}/{2}.json".format(base_path, instance.lang, relative_file_path_name)
+
+        try: instance.read_file(file_path_name, True)
+        except ( IOException, ValueException ):
+            fallback_lang = (Settings.get("core_lang") if (L10n.default_lang is None) else L10n.default_lang)
+
+            file_path_name = "{0}/{1}/{2}.json".format(base_path, fallback_lang, relative_file_path_name)
+            instance.read_file(file_path_name)
+        #
+    #
+
+    @staticmethod
+    def is_defined(key, lang = None):
+        """
+Checks if a given key is a defined language string.
+
+:param key: L10n key
+:param lang: Language code
+
+:return: (bool) True if defined
+:since:  v1.0.0
+        """
+
+        try: _dict = L10n.get_dict(lang)
+        except ValueException: _dict = { }
+
+        return (key in _dict)
     #
 
     @staticmethod

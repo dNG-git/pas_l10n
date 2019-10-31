@@ -36,6 +36,12 @@ message to the selected language.
              Mozilla Public License, v. 2.0
     """
 
+    __slots__ = [ "l10n_message" ]
+    """
+python.org: __slots__ reserves space for the declared variables and prevents
+the automatic creation of __dict__ and __weakref__ for each instance.
+    """
+
     def __init__(self, l10n_id, value = None, _exception = None):
         """
 Constructor __init__(TranslatableException)
